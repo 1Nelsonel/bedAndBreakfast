@@ -32,7 +32,7 @@ func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 	remoteIP := r.RemoteAddr
 	m.App.Session.Put(r.Context(), "remote_ip", remoteIP)
 
-	render.RenderTemplate(w, "home.page.tmpl", &models.TemplateData{})
+	render.RenderTemplate(w, r, "home.page.tmpl", &models.TemplateData{})
 }
 
 // About is the handler for the about page
@@ -45,7 +45,38 @@ func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
 	stringMap["remote_ip"] = remoteIP
 
 	// send data to the template
-	render.RenderTemplate(w, "about.page.tmpl", &models.TemplateData{
+	render.RenderTemplate(w, r, "about.page.tmpl", &models.TemplateData{
 		StringMap: stringMap,
 	})
+}
+
+// Reservation render make reservation page and display form
+func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
+	render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{})
+}
+
+// Generals render make Generals page and display form
+func (m *Repository) Generals(w http.ResponseWriter, r *http.Request) {
+	render.RenderTemplate(w,r, "generals.page.tmpl", &models.TemplateData{})
+}
+
+// Majors render make Majors page and display form
+func (m *Repository) Majors(w http.ResponseWriter, r *http.Request) {
+	render.RenderTemplate(w, r,"majors.page.tmpl", &models.TemplateData{})
+}
+
+// Availability render Availability page
+func (m *Repository) Availability(w http.ResponseWriter, r *http.Request) {
+	render.RenderTemplate(w,r,"search-availability.page.tmpl", &models.TemplateData{})
+}
+
+// PostAvailability render Availability page
+func (m *Repository) PostAvailability(w http.ResponseWriter, r *http.Request) {
+	// render.RenderTemplate(w, "search-availability.page.tmpl", &models.TemplateData{})
+	w.Write([]byte("Posted to search availability"))
+}
+
+// Contact renders Contact pagge
+func (m *Repository) Contact(w http.ResponseWriter, r *http.Request) {
+	render.RenderTemplate(w, r,"contact.page.tmpl", &models.TemplateData{})
 }
