@@ -6,9 +6,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/1Nelsonel/bedAndBreakfast/pkg/config"
-	"github.com/1Nelsonel/bedAndBreakfast/pkg/models"
-	"github.com/1Nelsonel/bedAndBreakfast/pkg/render"
+	"github.com/1Nelsonel/bedAndBreakfast/internal/config"
+	"github.com/1Nelsonel/bedAndBreakfast/internal/models"
+	"github.com/1Nelsonel/bedAndBreakfast/internal/render"
 )
 
 // Repo the repository used by the handlers

@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/alexedwards/scs/v2"
-	"github.com/1Nelsonel/bedAndBreakfast/pkg/config"
-	"github.com/1Nelsonel/bedAndBreakfast/pkg/handlers"
-	"github.com/1Nelsonel/bedAndBreakfast/pkg/render"
+	"github.com/1Nelsonel/bedAndBreakfast/internal/config"
+	"github.com/1Nelsonel/bedAndBreakfast/internal/handlers"
+	"github.com/1Nelsonel/bedAndBreakfast/internal/render"
 	"log"
 	"net/http"
 	"time"
