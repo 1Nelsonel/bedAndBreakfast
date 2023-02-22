@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/1Nelsonel/bedAndBreakfast/internal/config"
+	"github.com/1Nelsonel/bedAndBreakfast/internal/forms"
 	"github.com/1Nelsonel/bedAndBreakfast/internal/models"
 	"github.com/1Nelsonel/bedAndBreakfast/internal/render"
 )
@@ -56,7 +57,50 @@ func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
 
 // Reservation render make reservation page and display form
 func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{})
+	var emptyReservation models.Reservation
+	data:= make(map[string]interface{})
+	data["reservation"] = emptyReservation
+	render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+		Data: data,
+	})
+}
+
+// PostReservation handles the posting of reservation form
+func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
+	// render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{})
+	err := r.ParseForm()
+	if err != nil {
+		log.Println(err)
+
+		return
+	}
+
+	reservation := models.Reservation{
+		FirstName: r.Form.Get("first_name"),
+		LastName:  r.Form.Get("last_name"),
+		Phone:     r.Form.Get("phone"),
+		Email:     r.Form.Get("email"),
+	}
+
+	form := forms.New(r.PostForm)
+
+	form.Required("first_name","last_name","email")
+	form.MinLength("first_name", 3, r)
+	form.IsEmail("email")
+	
+
+	if !form.Valid() {
+		data := make(map[string]interface{})
+		data["reservation"] = reservation
+
+		render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+
 }
 
 // Generals render make Generals page and display form
@@ -98,7 +142,6 @@ func (m *Repository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println(err)
 	}
-
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(out)
