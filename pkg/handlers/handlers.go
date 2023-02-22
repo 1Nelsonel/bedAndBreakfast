@@ -1,10 +1,14 @@
 package handlers
 
 import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
+
 	"github.com/1Nelsonel/bedAndBreakfast/pkg/config"
 	"github.com/1Nelsonel/bedAndBreakfast/pkg/models"
 	"github.com/1Nelsonel/bedAndBreakfast/pkg/render"
-	"net/http"
 )
 
 // Repo the repository used by the handlers
@@ -57,26 +61,50 @@ func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
 
 // Generals render make Generals page and display form
 func (m *Repository) Generals(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w,r, "generals.page.tmpl", &models.TemplateData{})
+	render.RenderTemplate(w, r, "generals.page.tmpl", &models.TemplateData{})
 }
 
 // Majors render make Majors page and display form
 func (m *Repository) Majors(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r,"majors.page.tmpl", &models.TemplateData{})
+	render.RenderTemplate(w, r, "majors.page.tmpl", &models.TemplateData{})
 }
 
 // Availability render Availability page
 func (m *Repository) Availability(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w,r,"search-availability.page.tmpl", &models.TemplateData{})
+	render.RenderTemplate(w, r, "search-availability.page.tmpl", &models.TemplateData{})
 }
 
 // PostAvailability render Availability page
 func (m *Repository) PostAvailability(w http.ResponseWriter, r *http.Request) {
-	// render.RenderTemplate(w, "search-availability.page.tmpl", &models.TemplateData{})
-	w.Write([]byte("Posted to search availability"))
+	start := r.Form.Get("start")
+	end := r.Form.Get("end")
+
+	w.Write([]byte(fmt.Sprintf("Start date is %s and end date is %s", start, end)))
+}
+
+type jsonResponse struct {
+	OK      bool   `json:"ok"`
+	Message string `json:"message"`
+}
+
+// AvailabilityJSON render Availability and sends json response
+func (m *Repository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
+	resp := jsonResponse{
+		OK:      false,
+		Message: "available!",
+	}
+
+	out, err := json.MarshalIndent(resp, "", "     ")
+	if err != nil {
+		log.Println(err)
+	}
+
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(out)
 }
 
 // Contact renders Contact pagge
 func (m *Repository) Contact(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, r,"contact.page.tmpl", &models.TemplateData{})
+	render.RenderTemplate(w, r, "contact.page.tmpl", &models.TemplateData{})
 }
