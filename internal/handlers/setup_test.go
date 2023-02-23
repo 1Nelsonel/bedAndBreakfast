@@ -2,8 +2,11 @@ package handlers
 
 import (
 	"encoding/gob"
+	"fmt"
+	"html/template"
 	"log"
 	"net/http"
+	"path/filepath"
 	"time"
 
 	"github.com/1Nelsonel/bedAndBreakfast/internal/config"
@@ -17,6 +20,8 @@ import (
 
 var app config.AppConfig
 var session *scs.SessionManager
+var pathToTemplates = "./../../templates"
+var functions = template.FuncMap{}
 
 func getRoutes() http.Handler {
 	gob.Register(models.Reservation{})
@@ -33,14 +38,14 @@ func getRoutes() http.Handler {
 
 	app.Session = session
 
-	tc, err := render.CreateTemplateCache()
+	tc, err := CreateTestTemplateCache()
 	if err != nil {
 		log.Fatal("cannot create template cache")
 		
 	}
 
 	app.TemplateCache = tc
-	app.UseCache = false
+	app.UseCache = true
 
 	repo := NewRepo(&app)
 	NewHandlers(repo)
@@ -91,4 +96,40 @@ func NoSurf(next http.Handler) http.Handler {
 // SessionLoad loads and saves session data for current request
 func SessionLoad(next http.Handler) http.Handler {
 	return session.LoadAndSave(next)
+}
+
+
+// CreateTestTemplateCache creates a template cache as a map
+func CreateTestTemplateCache() (map[string]*template.Template, error) {
+
+	myCache := map[string]*template.Template{}
+
+	pages, err := filepath.Glob(fmt.Sprintf("%s/*.page.tmpl", pathToTemplates))
+	if err != nil {
+		return myCache, err
+	}
+
+	for _, page := range pages {
+		name := filepath.Base(page)
+		ts, err := template.New(name).Funcs(functions).ParseFiles(page)
+		if err != nil {
+			return myCache, err
+		}
+
+		matches, err := filepath.Glob(fmt.Sprintf("%s/*.layout.tmpl", pathToTemplates))
+		if err != nil {
+			return myCache, err
+		}
+
+		if len(matches) > 0 {
+			ts, err = ts.ParseGlob(fmt.Sprintf("%s/*.layout.tmpl", pathToTemplates))
+			if err != nil {
+				return myCache, err
+			}
+		}
+
+		myCache[name] = ts
+	}
+
+	return myCache, nil
 }
