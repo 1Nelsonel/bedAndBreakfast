@@ -66,3 +66,4 @@ func (f *Form) IsEmail(field string) {
 	}
 
 }
+
